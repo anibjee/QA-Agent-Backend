@@ -1,0 +1,21 @@
+UI/UX Guidelines
+
+1. Color Palette
+- Primary Action Button (Pay Now): Green (#4CAF50)
+- Error Messages: Red
+- Success Messages: Green
+- Background: White
+- Cart Section Background: Light Gray (#f9f9f9)
+
+2. Typography
+- Font: Arial, sans-serif
+- Headings: Bold, Clear hierarchy (H1 for page title, H2 for section titles)
+
+3. Interactions
+- Hover effects on buttons (darker green).
+- Real-time updates for Total Price when shipping changes or discount is applied.
+- Inline validation errors should appear immediately upon form submission attempt if invalid.
+
+4. Layout
+- Two-column layout on desktop: Form on left, Cart Summary on right.
+- Responsive design: Stack columns on smaller screens (though simple implementation may just be flex).

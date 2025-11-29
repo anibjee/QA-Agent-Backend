@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Project Data
+data/
+
+# Scripts
+verify_setup.py
+
+# Streamlit secrets
+.streamlit/secrets.toml
