@@ -24,8 +24,17 @@ class RAGService:
     @property
     def embeddings(self):
         if self._embeddings is None:
-            from langchain_huggingface import HuggingFaceEmbeddings
-            self._embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+            if settings.HUGGINGFACEHUB_API_TOKEN:
+                from langchain_huggingface import HuggingFaceEndpointEmbeddings
+                print("DEBUG: Using HuggingFace Inference API for Embeddings (Low RAM)")
+                self._embeddings = HuggingFaceEndpointEmbeddings(
+                    model="sentence-transformers/all-MiniLM-L6-v2",
+                    huggingfacehub_api_token=settings.HUGGINGFACEHUB_API_TOKEN
+                )
+            else:
+                from langchain_huggingface import HuggingFaceEmbeddings
+                print("DEBUG: Using Local HuggingFace Embeddings (High RAM)")
+                self._embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         return self._embeddings
 
     def generate_test_cases(self, feature_request: str) -> TestPlan:

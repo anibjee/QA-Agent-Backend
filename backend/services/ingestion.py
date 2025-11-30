@@ -14,8 +14,17 @@ class IngestionService:
     @property
     def embeddings(self):
         if self._embeddings is None:
-            from langchain_huggingface import HuggingFaceEmbeddings
-            self._embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+            if settings.HUGGINGFACEHUB_API_TOKEN:
+                from langchain_huggingface import HuggingFaceEndpointEmbeddings
+                print("DEBUG: Using HuggingFace Inference API for Embeddings (Low RAM)")
+                self._embeddings = HuggingFaceEndpointEmbeddings(
+                    model="sentence-transformers/all-MiniLM-L6-v2",
+                    huggingfacehub_api_token=settings.HUGGINGFACEHUB_API_TOKEN
+                )
+            else:
+                from langchain_huggingface import HuggingFaceEmbeddings
+                print("DEBUG: Using Local HuggingFace Embeddings (High RAM)")
+                self._embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         return self._embeddings
 
     def save_file(self, file, filename: str) -> str:
@@ -45,26 +54,33 @@ class IngestionService:
             # Fallback for other text based files
             loader = TextLoader(file_path, encoding='utf-8')
 
+        print(f"DEBUG: Loading file {file_path} with extension {ext}")
         documents = loader.load()
+        print(f"DEBUG: Loaded {len(documents)} documents")
         
         # Add metadata
         for doc in documents:
             doc.metadata["source"] = os.path.basename(file_path)
 
         # Split text
+        print("DEBUG: Splitting text...")
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200
         )
         chunks = text_splitter.split_documents(documents)
+        print(f"DEBUG: Split into {len(chunks)} chunks")
 
         # Store in Chroma
+        print("DEBUG: Initializing ChromaDB...")
         # Note: Chroma automatically persists if persist_directory is set
         vectorstore = Chroma(
             persist_directory=self.persist_directory,
             embedding_function=self.embeddings
         )
+        print("DEBUG: Adding documents to ChromaDB...")
         vectorstore.add_documents(chunks)
+        print("DEBUG: Successfully added to ChromaDB")
         
         return len(chunks)
 
