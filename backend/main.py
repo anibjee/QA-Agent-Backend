@@ -3,11 +3,17 @@ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 # --------------------------------------------------
+# --------------------------------------------------
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.core.config import settings
 from backend.api import endpoints
+
+# Ensure data directories exist
+os.makedirs(settings.CHROMA_PERSIST_DIRECTORY, exist_ok=True)
+os.makedirs(settings.UPLOAD_DIRECTORY, exist_ok=True)
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
