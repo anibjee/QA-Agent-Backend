@@ -1,4 +1,5 @@
 # --- SQLite Fix for Render (Must be at the top) ---
+print("DEBUG: Starting application initialization...")
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
