@@ -1,8 +1,14 @@
 # --- SQLite Fix for Render (Must be at the top) ---
 print("DEBUG: Starting application initialization...")
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+try:
+    __import__('pysqlite3')
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+    print("DEBUG: SQLite fix applied successfully.")
+except ImportError:
+    print("DEBUG: pysqlite3-binary not found, skipping SQLite fix (likely local environment).")
+except Exception as e:
+    print(f"DEBUG: Error applying SQLite fix: {e}")
 # --------------------------------------------------
 # --------------------------------------------------
 
@@ -33,3 +39,7 @@ app.include_router(endpoints.router, prefix=settings.API_V1_STR)
 @app.get("/")
 def read_root():
     return {"message": "Autonomous QA Agent API is running"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
