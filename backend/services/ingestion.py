@@ -9,11 +9,17 @@ import shutil
 
 class IngestionService:
     def __init__(self):
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self._embeddings = None
         self.persist_directory = settings.CHROMA_PERSIST_DIRECTORY
         
         # Ensure upload directory exists
         os.makedirs(settings.UPLOAD_DIRECTORY, exist_ok=True)
+
+    @property
+    def embeddings(self):
+        if self._embeddings is None:
+            self._embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        return self._embeddings
 
     def save_file(self, file, filename: str) -> str:
         file_path = os.path.join(settings.UPLOAD_DIRECTORY, filename)

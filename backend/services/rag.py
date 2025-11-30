@@ -9,13 +9,19 @@ import json
 
 class RAGService:
     def __init__(self):
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self._embeddings = None
         self.persist_directory = settings.CHROMA_PERSIST_DIRECTORY
         self.llm = ChatGroq(
             temperature=0,
             model_name="llama-3.3-70b-versatile",
             api_key=settings.GROQ_API_KEY
         )
+
+    @property
+    def embeddings(self):
+        if self._embeddings is None:
+            self._embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        return self._embeddings
 
     def generate_test_cases(self, feature_request: str) -> TestPlan:
         # 1. Retrieve context
