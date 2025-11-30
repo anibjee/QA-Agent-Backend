@@ -1,9 +1,5 @@
 import os
 from typing import List
-from langchain_community.document_loaders import TextLoader, UnstructuredMarkdownLoader, BSHTMLLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
 from backend.core.config import settings
 import shutil
 
@@ -18,6 +14,7 @@ class IngestionService:
     @property
     def embeddings(self):
         if self._embeddings is None:
+            from langchain_huggingface import HuggingFaceEmbeddings
             self._embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         return self._embeddings
 
@@ -28,6 +25,10 @@ class IngestionService:
         return file_path
 
     def process_document(self, file_path: str):
+        from langchain_community.document_loaders import TextLoader, UnstructuredMarkdownLoader, BSHTMLLoader
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        from langchain_chroma import Chroma
+
         # Determine loader based on extension
         ext = os.path.splitext(file_path)[1].lower()
         
